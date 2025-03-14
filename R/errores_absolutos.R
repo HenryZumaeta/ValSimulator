@@ -22,7 +22,6 @@
 #' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
 #' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -33,6 +32,7 @@
 #'   print(resultado$mae)
 #'   print(resultado$pmae)
 #' }
+#' @export
 ValMAE <- function(x, y) {
     x <- as.data.frame(x)
     y <- as.data.frame(y)
@@ -81,7 +81,6 @@ ValMAE <- function(x, y) {
 #' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
 #' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -91,6 +90,9 @@ ValMAE <- function(x, y) {
 #'   resultado <- ValMedAE(pred, obs)
 #'   print(resultado$medae)
 #' }
+#' @importFrom stats median
+#'
+#' @export
 ValMedAE <- function(x, y) {
     x <- as.data.frame(x)
     y <- as.data.frame(y)
