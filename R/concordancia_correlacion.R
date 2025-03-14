@@ -181,4 +181,3 @@ ValR2 <- function(x, y) {
 
     return(list(rcuadrado = rcuadrado))
 }
-
