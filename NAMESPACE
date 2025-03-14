@@ -2,4 +2,5 @@
 
 export(ValMAE)
 export(ValMedAE)
+export(ValRMAE)
 importFrom(stats,median)
