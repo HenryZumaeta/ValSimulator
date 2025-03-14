@@ -69,3 +69,132 @@ ValAIC <- function(x, y, k) {
 
     return(list(AIC = AIC, AICc = AICc))
 }
+
+
+#' Calcula el Criterio de Información Bayesiano (BIC)
+#'
+#' Esta función calcula el Criterio de Información Bayesiano (BIC) entre las predicciones y las observaciones.
+#' El BIC es una medida que equilibra el ajuste del modelo con su complejidad y se define como:
+#' \deqn{BIC = -2 \log(L) + \log(n) \times k,}
+#' donde \eqn{L} es la verosimilitud del modelo, \eqn{n} es el tamaño de la muestra y \eqn{k} es el número de parámetros.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#' @param k Número de parámetros del modelo.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{BIC}{Vector con el Criterio de Información Bayesiano para cada modelo.}
+#' }
+#'
+#' @details Para cada modelo (columna de \code{x}), la función realiza los siguientes pasos:
+#' \enumerate{
+#'   \item Une las observaciones y las predicciones en un solo objeto, omitiendo valores faltantes.
+#'   \item Calcula el error cuadrático (RSS) entre las observaciones y las predicciones.
+#'   \item Estima la varianza del error como \eqn{\sigma^2 = \text{RSS} / n}, donde \eqn{n} es el número de observaciones.
+#'   \item Define la log-verosimilitud como:
+#'   \deqn{\ell L = -\frac{n}{2} \log(\sigma^2),}
+#'   \item Y, por lo tanto, el BIC se calcula como:
+#'   \deqn{BIC = -2 \ell L + \log(n) \times k = n \log(\sigma^2) + \log(n) \times k.}
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   # Supongamos que el modelo tiene 3 parámetros:
+#'   resultado <- ValBIC(pred, obs, k = 3)
+#'   print(resultado$BIC)
+#' }
+ValBIC <- function(x, y, k) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    m <- ncol(x)
+    n <- nrow(y)
+
+    rss <- numeric(m)
+    modelo <- na.omit(cbind(y, x))
+    n_modelo <- nrow(modelo)
+
+    BIC <- numeric(m)
+    for (i in 1:m) {
+        rss[i] <- sum((modelo[, 1] - modelo[, i + 1])^2)
+        sigma2 <- rss[i] / n_modelo
+        BIC[i] <- n_modelo * log(sigma2) + log(n_modelo) * k
+    }
+
+    return(list(BIC = BIC))
+}
+
+
+#' Calcula la Inferencia Bayesiana
+#'
+#' Esta función calcula la inferencia bayesiana entre las predicciones y las observaciones,
+#' asumiendo un prior uniforme sobre los modelos. Para cada modelo (columna de \code{x}), se estima la
+#' log-verosimilitud a partir del error cuadrático y se obtiene la probabilidad posterior relativa.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Un vector con las probabilidades posteriores para cada modelo.
+#'
+#' @details La función realiza los siguientes pasos:
+#' \enumerate{
+#'   \item Une las observaciones y las predicciones en un solo objeto (omitiendo valores faltantes).
+#'   \item Para cada modelo (columna de \code{x}), calcula el error cuadrático (RSS) entre las observaciones y las predicciones.
+#'   \item Estima la varianza del error (\eqn{\sigma^2 = \text{RSS} / n}) y define la log-verosimilitud como:
+#'   \deqn{\ell L = -\frac{n}{2} \log(\sigma^2),}
+#'   \item Calcula la verosimilitud (\eqn{L = \exp(\ell L)}),
+#'   \item Aplica un prior uniforme (\eqn{a priori = 1/m}) y finalmente
+#'   \deqn{\text{posteriori} = \frac{\text{prior} \times L}{\sum (\text{prior} \times L)}.}
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   resultados <- ValBayes(pred, obs)
+#'   print(resultados)
+#' }
+ValBayes <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    m <- ncol(x)
+    n <- nrow(y)
+
+    apriori <- rep(1 / m, m)
+    lL <- numeric(m)
+    sigmas2 <- numeric(m)
+    rss <- numeric(m)
+    modelo <- na.omit(cbind(y, x))
+    n_modelo <- nrow(modelo)
+
+    for (i in 1:m) {
+        rss[i] <- sum((modelo[, 1] - modelo[, i + 1])^2)
+        sigmas2[i] <- rss[i] / n_modelo
+        lL[i] <- (-n_modelo / 2) * log(sigmas2[i])
+    }
+
+    L <- exp(lL)
+    numerador <- apriori * L
+    denominador <- sum(numerador)
+    posteriori <- numerador / denominador
+
+    return(posteriori)
+}
