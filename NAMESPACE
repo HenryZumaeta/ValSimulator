@@ -3,6 +3,7 @@
 export(ValMAE)
 export(ValMAPE)
 export(ValMSE)
+export(ValMSLE)
 export(ValMedAE)
 export(ValRMAE)
 export(ValSMAPE)
