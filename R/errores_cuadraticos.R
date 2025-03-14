@@ -231,3 +231,61 @@ ValRMSLE <- function(x, y) {
 
     return(list(rmsle = rmsle))
 }
+
+
+#' Calcula el Error Cuadrático Porcentual Medio (RMSPE)
+#'
+#' Esta función calcula el error cuadrático porcentual medio entre las predicciones y las observaciones.
+#' El RMSPE se expresa en porcentaje y permite evaluar la magnitud del error en relación con los valores reales.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{rmspe}{Matriz con el error cuadrático porcentual medio, expresado en porcentaje.}
+#' }
+#'
+#' @details Para cada modelo (columna de \code{x}) y cada conjunto de observaciones (columna de \code{y}),
+#' se calcula el error porcentual de cada observación como:
+#' \deqn{PE_i = \left(\frac{x_i - y_i}{y_i}\right)^2}
+#' y, posteriormente, se calcula el RMSPE como:
+#' \deqn{RMSPE = \sqrt{\frac{1}{n}\sum_{i=1}^{n} PE_i} \times 100}
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   resultado <- ValRMSPE(pred, obs)
+#'   print(resultado$rmspe)
+#' }
+#'
+#' @export
+#'
+ValRMSPE <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    rmspe <- matrix(nrow = numreal, ncol = numsim,
+                    dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            valid_indices <- which(yy != 0 & !is.na(xx) & !is.na(yy))
+            perc_error <- ((xx[valid_indices] - yy[valid_indices]) / yy[valid_indices])^2
+            rmspe[j, i] <- sqrt(mean(perc_error)) * 100
+        }
+    }
+
+    return(list(rmspe = rmspe))
+}
