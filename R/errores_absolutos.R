@@ -232,4 +232,58 @@ ValMAPE <- function(x, y) {
 }
 
 
+#' Calcula el Error Absoluto Porcentual Medio Simétrico (sMAPE)
+#'
+#' Esta función calcula el error absoluto porcentual medio simétrico entre las predicciones y las observaciones.
+#' El sMAPE se expresa en porcentaje y se define como el promedio de la razón simétrica entre la diferencia absoluta
+#' y la suma de los valores absolutos, lo cual permite evaluar la precisión de las predicciones de manera simétrica.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{smape}{Matriz con los errores absolutos porcentuales medios simétricos, expresados en porcentaje.}
+#' }
+#'
+#' @details Para cada modelo (columna de \code{x}) y cada conjunto de observaciones (columna de \code{y}),
+#' se calcula:
+#' \deqn{sMAPE = \frac{1}{n}\sum_{i=1}^{n}\frac{2 \, |x_i - y_i|}{|x_i| + |y_i|} \times 100}
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   resultado <- ValSMAPE(pred, obs)
+#'   print(resultado$smape)
+#' }
+#'
+#' @export
+#'
+ValSMAPE <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    smape <- matrix(nrow = numreal, ncol = numsim,
+                    dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            valid_indices <- which(!is.na(xx) & !is.na(yy))
+            smape[j, i] <- mean(2 * abs(xx[valid_indices] - yy[valid_indices]) / (abs(xx[valid_indices]) + abs(yy[valid_indices]))) * 100
+        }
+    }
+
+    return(list(smape = smape))
+}
 
