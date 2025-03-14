@@ -37,6 +37,7 @@ y
   print(resultado$mae)
   print(resultado$pmae)
 }
+
 }
 \author{
 Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
