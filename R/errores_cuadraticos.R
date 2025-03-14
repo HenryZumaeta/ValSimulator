@@ -64,3 +64,59 @@ ValMSE <- function(x, y) {
 
     return(list(mse = mse, rmse = rmse, prmse = prmse))
 }
+
+
+#' Calcula el Error Cuadrático Medio Relativo (RRMSE)
+#'
+#' Esta función calcula el error cuadrático medio relativo entre las predicciones y las observaciones,
+#' dividiendo la raíz del error cuadrático medio (RMSE) por la media de las observaciones. Esta métrica permite evaluar la
+#' magnitud del error en relación con los valores reales.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{rrmse}{Matriz con los errores cuadráticos medios relativos.}
+#' }
+#'
+#' @details Para cada modelo (columna de \code{x}) y cada conjunto de observaciones (columna de \code{y}),
+#' se calcula:
+#' \deqn{RRMSE = \frac{\sqrt{\frac{1}{n}\sum_{i=1}^{n}(x_i - y_i)^2}}{\bar{y}}}
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   resultado <- ValRRMSE(pred, obs)
+#'   print(resultado$rrmse)
+#' }
+#'
+#' #' @export
+#'
+ValRRMSE <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    rrmse <- matrix(nrow = numreal, ncol = numsim,
+                    dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            valid_indices <- which(!is.na(xx) & !is.na(yy))
+            rrmse[j, i] <- sqrt(mean((xx[valid_indices] - yy[valid_indices])^2)) / mean(yy[valid_indices])
+        }
+    }
+
+    return(list(rrmse = rrmse))
+}
