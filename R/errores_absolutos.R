@@ -286,4 +286,3 @@ ValSMAPE <- function(x, y) {
 
     return(list(smape = smape))
 }
-
