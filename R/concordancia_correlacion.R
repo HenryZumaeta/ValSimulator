@@ -128,3 +128,57 @@ ValCorrela <- function(x, y, methods = c("pearson", "spearman", "kendall")) {
     return(result_list)
 }
 
+
+#' Calcula el Coeficiente de Determinación R cuadrado (R²)
+#'
+#' Esta función calcula el coeficiente de determinación R² entre las predicciones y las observaciones.
+#' El R² representa la proporción de la varianza en las observaciones que es explicada por las predicciones.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{rcuadrado}{Matriz con el coeficiente de determinación R² para cada combinación de modelo y observación.}
+#' }
+#'
+#' @details Para cada par de columnas (modelo y observación), se calcula:
+#' \deqn{R^2 = \left(\mathrm{cor}(x, y, \text{use = "complete.obs"})\right)^2}
+#' utilizando únicamente las observaciones completas (omitiendo valores NA).
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13))
+#'   resultado <- ValR2(pred, obs)
+#'   print(resultado$rcuadrado)
+#' }
+#'
+#' @export
+#'
+ValR2 <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    rcuadrado <- matrix(nrow = numreal, ncol = numsim,
+                        dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            rcuadrado[j, i] <- cor(xx, yy, use = "complete.obs")^2
+        }
+    }
+
+    return(list(rcuadrado = rcuadrado))
+}
+
