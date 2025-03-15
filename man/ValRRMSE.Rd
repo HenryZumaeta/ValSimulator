@@ -36,8 +36,6 @@ se calcula:
   print(resultado$rrmse)
 }
 
-#' @export
-
 }
 \author{
 Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})

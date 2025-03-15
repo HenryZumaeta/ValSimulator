@@ -98,7 +98,7 @@ ValMSE <- function(x, y) {
 #'   print(resultado$rrmse)
 #' }
 #'
-#' #' @export
+#' @export
 #'
 ValRRMSE <- function(x, y) {
     x <- as.data.frame(x)

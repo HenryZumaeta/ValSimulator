@@ -39,6 +39,7 @@ La función realiza los siguientes pasos:
   resultados <- ValBayes(pred, obs)
   print(resultados)
 }
+
 }
 \author{
 Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
