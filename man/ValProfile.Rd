@@ -11,7 +11,7 @@ ValProfile(x, y, instantetiempo)
 
 \item{y}{Data frame, matriz o vector numérico que contiene las observaciones.}
 
-\item{instantetiempo}{Número de instantes de tiempo o el intervalo que define el perfil.}
+\item{instantetiempo}{Número de instantes de tiempo (o intervalo) en donde se tomaron las muestras, y que define el perfil.}
 }
 \value{
 Una lista con dos elementos:
@@ -21,23 +21,27 @@ Una lista con dos elementos:
 }
 }
 \description{
-Esta función realiza un análisis de perfil entre las predicciones y las observaciones.
-Para cada perfil (fila de \code{x}), se construye una matriz a partir de los datos de \code{y} en
-intervalos definidos por \code{instantetiempo} y se calcula el estadístico de Hotelling's T² utilizando
-un test chi-cuadrado.
+Esta función realiza un análisis de perfil entre las predicciones y las observaciones. Es un método multivariante
+que prueba la hipótesis de que la trayectoria de los datos reales y la salida del modelo son paralelas, lo cual permite
+evaluar modelos que simulan el comportamiento de un sistema real a lo largo del tiempo.
 }
 \details{
 La función realiza los siguientes pasos:
 \enumerate{
-\item Convierte \code{x} y \code{y} en data frames y elimina filas con NA de \code{y} mediante \code{na.omit()}.
-\item Define el número de subintervalos (\code{var}) como la cantidad de columnas de \code{y} dividido entre \code{instantetiempo}.
-\item Para cada perfil (fila de \code{x}), construye una matriz \code{yyy} mediante la diferencia secuencial de
-los valores de \code{y} y \code{x} en cada intervalo.
-\item Calcula el estadístico Hotelling's T² y el valor p utilizando la función \code{HotellingsT2} (con test = "chi").
+\item Convierte \code{x} y \code{y} en data frames y elimina las filas incompletas de \code{y} mediante \code{na.omit()}.
+\item Define el número de subintervalos (\code{var}) como la cantidad de columnas de \code{y} dividida entre \code{instantetiempo}.
+\item Para cada perfil (fila de \code{x}), construye una matriz \code{yyy} a partir de los datos de \code{y} en intervalos definidos
+por \code{instantetiempo}. Esta matriz se forma calculando las diferencias secuenciales entre columnas consecutivas de \code{y} y
+de \code{x}.
+\item Calcula el estadístico Hotelling's T² y el valor p utilizando la función \code{HotellingsT2} del paquete \code{ICSNP} (con \code{test = "chi"}).
 }
+
+Además, este método permite evaluar modelos con múltiples variables respuesta y diversos intervalos de tiempo.
+Una desventaja es que puede requerir un número relativamente grande de réplicas, que se estima con la condición
+\eqn{n > q(k-1)}, donde \eqn{q} es el número de variables respuesta y \eqn{k} el número de instantes de tiempo.
 }
 \note{
-Se asume que la función \code{HotellingsT2} está disponible y se importa desde el paquete \code{ICSNP}.
+Se requiere que el paquete \code{ICSNP} esté instalado, ya que se utiliza la función \code{HotellingsT2}.
 }
 \examples{
 \dontrun{
@@ -50,6 +54,15 @@ Se asume que la función \code{HotellingsT2} está disponible y se importa desde
   print(resultado$T2)
   print(resultado$valorp)
 }
+
+}
+\references{
+HAEFNER, James W. (2005). \emph{Modeling Biological Systems: Principles and Applications}. Springer.
+\cr
+Timm N. H. (1975). \emph{Multivariate Analysis with Applications in Education and Psychology}. Monterey: Brooks/Cole Publishing Company.
+}
+\seealso{
+\code{\link[ICSNP]{HotellingsT2}} del paquete \code{ICSNP}.
 }
 \author{
 Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
