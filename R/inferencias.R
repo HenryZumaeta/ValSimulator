@@ -245,3 +245,67 @@ ValBootstrap <- function(x, y, R = 1000) {
     return(list(diff_mean = diff_mean, ci_lower = ci_lower, ci_upper = ci_upper))
 }
 
+
+#' Realiza la Inferencia Paramétrica con ANOVA
+#'
+#' Esta función realiza una prueba ANOVA de una vía para comparar las predicciones y las observaciones.
+#' Para cada modelo (columna de \code{x} y \code{y}), combina la información en un único data frame, añadiendo
+#' un factor que indica si el valor proviene de las predicciones ("Pred") o de las observaciones ("Obs"), y luego
+#' realiza la prueba ANOVA para determinar si existen diferencias significativas.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista en la que cada elemento es el resumen de la prueba ANOVA para cada modelo.
+#'
+#' @details Para cada modelo, la función:
+#' \enumerate{
+#'   \item Combina los valores de \code{x} y \code{y} en un único data frame.
+#'   \item Crea un factor que clasifica los valores en "Pred" y "Obs".
+#'   \item Realiza una prueba ANOVA de una vía para evaluar si existen diferencias significativas
+#'   entre las predicciones y las observaciones.
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs  <- data.frame(real1 = c(10, 11, 13), real2 = c(8, 10, 12))
+#'   resultados <- ValANOVA(pred, obs)
+#'   # Para ver el resumen de la prueba ANOVA del Modelo 1:
+#'   print(resultados[["Modelo 1"]])
+#' }
+#'
+#' @importFrom stats aov
+#'
+ValANOVA <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numsim <- ncol(x)
+
+    anova_list <- vector("list", length = numsim)
+
+    for (i in 1:numsim) {
+        pred <- x[[i]]
+        obs  <- y[[i]]
+
+        df <- data.frame(
+            value = c(pred, obs),
+            group = factor(rep(c("Pred", "Obs"), each = length(pred)))
+        )
+
+        anova_list[[i]] <- summary(aov(value ~ group, data = df))
+    }
+
+    names(anova_list) <- paste("Modelo", 1:numsim)
+
+    return(anova_list)
+}
+
