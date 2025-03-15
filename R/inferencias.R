@@ -309,3 +309,53 @@ ValANOVA <- function(x, y) {
     return(anova_list)
 }
 
+
+#' Realiza la Inferencia No Paramétrica con Wilcoxon
+#'
+#' Esta función realiza la prueba de Wilcoxon para muestras pareadas entre las predicciones y las observaciones.
+#' Se utiliza para evaluar si existe una diferencia significativa en la mediana de las diferencias entre las dos muestras.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con dos elementos:
+#' \describe{
+#'   \item{statistic}{Vector con el estadístico de la prueba Wilcoxon para cada modelo.}
+#'   \item{p.value}{Vector con el valor p asociado a la prueba para cada modelo.}
+#' }
+#'
+#' @details Para cada par de columnas (un modelo) se realiza la prueba de Wilcoxon para muestras pareadas,
+#' evaluando la hipótesis nula de que la mediana de las diferencias es cero.
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13), real2 = c(8, 10, 12))
+#'   resultado <- ValWilcoxon(pred, obs)
+#'   print(resultado$statistic)
+#'   print(resultado$p.value)
+#' }
+#'
+#' @importFrom stats wilcox.test
+#'
+ValWilcoxon <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    m <- ncol(x)
+    stat <- numeric(m)
+    pval <- numeric(m)
+    for (i in 1:m) {
+        test <- wilcox.test(x[[i]], y[[i]], paired = TRUE)
+        stat[i] <- test$statistic
+        pval[i] <- test$p.value
+    }
+    return(list(statistic = stat, p.value = pval))
+}
