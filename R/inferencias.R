@@ -177,3 +177,71 @@ ValMLE <- function(x, y) {
     }
     return(list(mu = mu, sigma2 = sigma2))
 }
+
+
+#' Realiza el Remuestreo Bootstrap para la Diferencia de Medias
+#'
+#' Esta función realiza un remuestreo bootstrap para estimar la diferencia en medias entre las
+#' predicciones y las observaciones, así como para calcular su intervalo de confianza al 95%.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#' @param R Número de replicaciones del bootstrap (por defecto 1000).
+#'
+#' @return Una lista con tres elementos:
+#' \describe{
+#'   \item{diff_mean}{Vector con la diferencia en medias estimada para cada modelo.}
+#'   \item{ci_lower}{Vector con el límite inferior del intervalo de confianza para la diferencia en medias.}
+#'   \item{ci_upper}{Vector con el límite superior del intervalo de confianza para la diferencia en medias.}
+#' }
+#'
+#' @details Para cada modelo (columna en \code{x} y \code{y}), la función:
+#' \enumerate{
+#'   \item Calcula la diferencia \eqn{d = x_i - y_i} y su media.
+#'   \item Realiza \code{R} replicaciones, en cada una de las cuales se muestrea de forma aleatoria con
+#'   reemplazo la diferencia y se calcula la media.
+#'   \item Calcula el intervalo de confianza al 95% a partir de los cuantiles 0.025 y 0.975 de las replicaciones.
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(8, 11, 13), real2 = c(9, 10, 14))
+#'   resultado <- ValBootstrap(pred, obs, R = 1000)
+#'   print(resultado$diff_mean)
+#'   print(resultado$ci_lower)
+#'   print(resultado$ci_upper)
+#' }
+#'
+#' @importFrom stats quantile
+#'
+ValBootstrap <- function(x, y, R = 1000) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    m <- ncol(x)
+    diff_mean <- numeric(m)
+    ci_lower <- numeric(m)
+    ci_upper <- numeric(m)
+    for (i in 1:m) {
+        diff <- x[[i]] - y[[i]]
+        diff_mean[i] <- mean(diff, na.rm = TRUE)
+        boot_est <- numeric(R)
+        n <- length(diff)
+        for (r in 1:R) {
+            idx <- sample(1:n, size = n, replace = TRUE)
+            boot_est[r] <- mean(diff[idx], na.rm = TRUE)
+        }
+        ci_lower[i] <- quantile(boot_est, 0.025, na.rm = TRUE)
+        ci_upper[i] <- quantile(boot_est, 0.975, na.rm = TRUE)
+    }
+    return(list(diff_mean = diff_mean, ci_lower = ci_lower, ci_upper = ci_upper))
+}
+
