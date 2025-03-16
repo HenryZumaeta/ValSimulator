@@ -150,6 +150,8 @@ ValNash <- function(x, y) {
 #'   print(resultado$SC)
 #'   print(resultado$RC)
 #' }
+#'
+#' @importFrom stats cor sd
 ValTheil <- function(x, y) {
     x <- as.data.frame(x)
     y <- as.data.frame(y)

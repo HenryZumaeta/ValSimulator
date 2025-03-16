@@ -45,6 +45,7 @@ de desviaciones estándar (ajustada por el factor \eqn{(n-1)/n}), y el component
   print(resultado$SC)
   print(resultado$RC)
 }
+
 }
 \author{
 Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
