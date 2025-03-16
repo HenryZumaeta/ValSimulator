@@ -1,6 +1,6 @@
 Package: ValSimulator
 Title: Funciones de Validación de Modelos de Simulación
-Version: 1.0
+Version: 1.0.0
 Authors@R:
     person("Henry", "Zumaeta", 
            email = "henry.zumaeta.l@uni.pe", 
