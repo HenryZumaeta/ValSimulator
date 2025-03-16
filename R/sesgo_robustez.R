@@ -51,3 +51,68 @@ ValMBD <- function(x, y) {
 
     return(list(mbd = mbd))
 }
+
+
+#' Calcula el Sesgo Absoluto Medio (MASE)
+#'
+#' Esta función calcula el sesgo absoluto medio (MASE) entre las predicciones y las observaciones.
+#' El MASE se define como el promedio del valor absoluto de la diferencia entre las predicciones y las observaciones,
+#' normalizado por el promedio de la diferencia absoluta entre las observaciones y su valor con un desfase (lag = 1).
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{mase}{Matriz con el sesgo absoluto medio para cada combinación de modelo y observación.}
+#' }
+#'
+#' @details Para cada par de columnas correspondientes a un modelo, la función:
+#' \enumerate{
+#'   \item Convierte \code{x} e \code{y} en data frames.
+#'   \item Calcula el valor absoluto de la diferencia entre las predicciones y las observaciones.
+#'   \item Normaliza este valor dividiéndolo por el promedio de la diferencia absoluta entre las observaciones
+#'         y su valor retrasado (lag de 1).
+#' }
+#'
+#' @note La función \code{lag} se utiliza para obtener el valor previo de las observaciones.
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})\cr
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}\cr
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs  <- data.frame(real1 = c(8, 11, 13), real2 = c(10, 10, 16))
+#'   resultado <- ValMASE(pred, obs)
+#'   print(resultado$mase)
+#' }
+#'
+#' @importFrom stats lag
+ValMASE <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    mase <- matrix(nrow = numreal, ncol = numsim,
+                   dimnames = list(paste("Observacion", 1:numreal),
+                                   paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            valid_indices <- which(!is.na(xx) & !is.na(yy))
+            mase[j, i] <- mean(abs(xx[valid_indices] - yy[valid_indices])) /
+                mean(abs(yy[valid_indices] - lag(yy[valid_indices], k = 1)))
+        }
+    }
+
+    return(list(mase = mase))
+}
