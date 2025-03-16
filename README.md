@@ -8,47 +8,134 @@
 [![R-CMD-check](https://github.com/HenryZumaeta/ValSimulator/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/HenryZumaeta/ValSimulator/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of ValSimulator is to …
+ValSimulator es un paquete de R que contiene un conjunto de funciones
+destinadas a la validación de modelos de simulación.  
+Este paquete incluye herramientas para calcular métricas de error (como
+MAE, MSE, etc.), realizar pruebas estadísticas, evaluar inferencias, y
+otros índices de rendimiento y precisión.
 
-## Installation
+## Instalación
 
-You can install the development version of ValSimulator from
-[GitHub](https://github.com/) with:
+Puedes instalar la versión de desarrollo de ValSimulator desde
+[GitHub](https://github.com/) con:
 
 ``` r
 # install.packages("pak")
 pak::pak("HenryZumaeta/ValSimulator")
 ```
 
-## Example
+## Uso Básico
 
-This is a basic example which shows you how to solve a common problem:
+Aquí se muestra un ejemplo básico de cómo utilizar algunas de las
+funciones del paquete:
 
 ``` r
 library(ValSimulator)
-## basic example code
+   
+# Ejemplo: Cálculo del Error Absoluto Medio
+pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+obs <- data.frame(real1 = c(10, 11, 13))
+resultado <- ValMAE(pred, obs)
+print(resultado$mae)
+print(resultado$pmae)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+## Funciones del paquete ValSimulator
 
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
+El paquete incluye funciones agrupadas en los siguientes archivos:
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+### **`analisis_perfil.R`**
 
-You can also embed plots, for example:
+- `ValPerfil` (Análisis de perfil basado en Hotelling’s T²)
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+### **`clasificacion_precision.R`**
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+- `ValHingeLoss` (Pérdida de Bisagra para Modelos de Clasificación)
+
+### **`concordancia_correlacion.R`**
+
+- `ValWillmott` (Índice de Concordancia de Willmott)  
+- `ValCorrela` (Coeficientes de Correlación de Pearson, Spearman y
+  Kendall)  
+- `ValR2` (Coeficiente de Determinación $R^2$)
+
+### **`criterio_informacion.R`**
+
+- `ValAIC` (Criterio de Información de Akaike)  
+- `ValBIC` (Criterio de Información Bayesiano)
+
+### **`divergencia_dispersion.R`**
+
+- `ValKullbackLeibler` (Divergencia de Kullback-Leibler)
+
+### **`entropia_diversidad.R`**
+
+- `ValShannon` (Entropía de Shannon)
+
+### **`errores_absolutos.R`**
+
+- `ValMAE` (Error Absoluto Medio)  
+- `ValMedAE` (Error Absoluto Mediano)  
+- `ValRMAE` (Error Absoluto Medio Relativo)  
+- `ValMAPE` (Error Absoluto Porcentual Medio)  
+- `ValSMAPE` (Error Absoluto Porcentual Medio Simétrico)
+
+### **`errores_cuadraticos.R`**
+
+- `ValMSE` (Error Cuadrático Medio)  
+- `ValRMSE` (Raíz del Error Cuadrático Medio)  
+- `ValPRMSE` (Error Cuadrático Medio Relativo en porcentaje)  
+- `ValRRMSE` (Error Cuadrático Medio Relativo)  
+- `ValMSLE` (Error Cuadrático Medio Logarítmico)  
+- `ValRMSLE` (Raíz del Error Cuadrático Medio Logarítmico)  
+- `ValRMSPE` (Raíz del Error Cuadrático Porcentual Medio)
+
+### **`gini.R`**
+
+- `ValGini` (Coeficiente de Gini)
+
+### **`indices_metricas_compuestas.R`**
+
+- `ValNash` (Índice de Eficiencia de Nash-Sutcliffe)  
+- `ValTheil` (Índice de Theil con componentes MC, SC y RC)
+
+### **`inferencias_modelos.R`**
+
+- `ValBayes` (Inferencia Bayesiana)  
+- `ValMLE` (Estimaciones de Máxima Verosimilitud)  
+- `ValBootstrap` (Remuestreo Bootstrap)
+
+### **`perdida_sesgo.R`**
+
+- `ValHuberLoss` (Pérdida de Huber)  
+- `ValLogCoshLoss` (Pérdida Log-Cosh)  
+- `ValQuantileLoss` (Pérdida Cuantílica)
+
+### **`pruebas_estadisticas.R`**
+
+- `ValPruebaF` (Prueba F de Fisher)  
+- `ValPruebat` (Prueba t de Student)  
+- `ValFrequentista` (Inferencia Frecuentista con Prueba t Pareada)  
+- `ValWilcoxon` (Prueba de Wilcoxon)  
+- `ValANOVA` (Análisis de Varianza)
+
+### **`sesgo_robustez.R`**
+
+- `ValMBD` (Desviación Media del Sesgo)  
+- `ValMASE` (Error Absoluto Medio Escalado)  
+- `ValPBIAS` (Sesgo Porcentual)
+
+### **`variabilidad.R`**
+
+- `ValCV` (Coeficiente de Variación)
+
+## Contribución
+
+Si deseas contribuir al paquete o reportar problemas, por favor visita
+el repositorio en
+[GitHub](https://github.com/HenryZumaeta/ValSimulator).
+
+## Licencia
+
+ValSimulator está bajo licencia MIT. Consulta el archivo LICENSE para
+más detalles.
