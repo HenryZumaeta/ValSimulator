@@ -58,3 +58,62 @@ ValHuberLoss <- function(x, y, delta = 1.0) {
 }
 
 
+#' Calcula la Pérdida Log-Cosh (Log-Cosh Loss)
+#'
+#' Esta función calcula la pérdida Log-Cosh entre las predicciones y las observaciones.
+#' La pérdida Log-Cosh se define como el logaritmo del coseno hiperbólico del error, lo que la hace similar al error cuadrático
+#' para errores pequeños, pero se comporta de manera lineal para errores grandes, ofreciendo mayor robustez frente a valores atípicos.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con un elemento:
+#' \describe{
+#'   \item{log_cosh_loss}{Matriz con la pérdida Log-Cosh para cada combinación de modelo y observación.}
+#' }
+#'
+#' @details Para cada modelo (columna en \code{x} y en \code{y}), la función:
+#' \enumerate{
+#'   \item Convierte los datos en data frames.
+#'   \item Identifica las posiciones sin valores faltantes.
+#'   \item Calcula la pérdida Log-Cosh, definida como:
+#'   \deqn{L = \log\left(\cosh\left(x_i - y_i\right)\right),}
+#'   y devuelve el promedio de dichos valores para cada modelo.
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})\cr
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}\cr
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(8, 11, 13), real2 = c(10, 10, 16))
+#'   resultado <- ValLogCoshLoss(pred, obs)
+#'   print(resultado$log_cosh_loss)
+#' }
+ValLogCoshLoss <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    log_cosh_loss <- matrix(nrow = numreal, ncol = numsim,
+                            dimnames = list(paste("Observacion", 1:numreal),
+                                            paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            valid_indices <- which(!is.na(xx) & !is.na(yy))
+            log_cosh_loss[j, i] <- mean(log(cosh(xx[valid_indices] - yy[valid_indices])))
+        }
+    }
+
+    return(list(log_cosh_loss = log_cosh_loss))
+}
