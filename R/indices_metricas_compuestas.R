@@ -106,3 +106,75 @@ ValNash <- function(x, y) {
 
     return(list(Eficiencia = EF))
 }
+
+#' Calcula el Índice de Theil
+#'
+#' Esta función calcula el índice de Theil entre las predicciones y las observaciones.
+#' El índice de Theil se descompone en tres componentes: MC, SC y RC, que evalúan diferentes
+#' aspectos de la discrepancia entre los valores predichos y observados.
+#'
+#' @param x Data frame, matriz o vector numérico que contiene las predicciones.
+#' @param y Data frame, matriz o vector numérico que contiene las observaciones.
+#'
+#' @return Una lista con tres elementos:
+#' \describe{
+#'   \item{MC}{Matriz que representa el componente de diferencia de medias, calculado como
+#'   \eqn{MC = \frac{(\bar{x} - \bar{y})^2}{MSE}}, donde \eqn{MSE} es el error cuadrático medio.}
+#'   \item{SC}{Matriz que representa la diferencia entre las desviaciones estándar, ajustada por el número de observaciones,
+#'   \eqn{SC = \frac{(n-1)}{n} \frac{(sd(x) - sd(y))^2}{MSE}.}}
+#'   \item{RC}{Matriz que mide la discrepancia basada en la correlación entre \code{x} e \code{y}, definida como
+#'   \eqn{RC = 2 \frac{(n-1)}{n} \frac{sd(x) \times sd(y)}{MSE} \left[1 - \mathrm{cor}(x, y)\right].}}
+#' }
+#'
+#' @details Para cada par de columnas correspondientes a un modelo, la función:
+#' \enumerate{
+#'   \item Calcula el error cuadrático medio (MSE) entre \code{x} e \code{y}.
+#'   \item Estima el componente MC a partir de la diferencia de medias, el componente SC a partir de la diferencia
+#'   de desviaciones estándar (ajustada por el factor \eqn{(n-1)/n}), y el componente RC a partir de la correlación.
+#' }
+#'
+#' @author
+#' Henry P. Zumaeta Lozano (\email{henry.zumaeta.l@uni.pe})
+#' LinkedIn: \href{https://www.linkedin.com/in/henryzumaeta}{henryzumaeta}
+#' WhatsApp: \href{https://wa.me/51963719768}{+51963719768}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'   # Ejemplo de uso:
+#'   pred <- data.frame(modelo1 = c(10, 12, 14), modelo2 = c(9, 11, 15))
+#'   obs <- data.frame(real1 = c(10, 11, 13), real2 = c(8, 10, 12))
+#'   resultado <- ValTheil(pred, obs)
+#'   print(resultado$MC)
+#'   print(resultado$SC)
+#'   print(resultado$RC)
+#' }
+ValTheil <- function(x, y) {
+    x <- as.data.frame(x)
+    y <- as.data.frame(y)
+    numreal <- ncol(y)
+    numsim <- ncol(x)
+
+    MC <- matrix(nrow = numreal, ncol = numsim,
+                 dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+    SC <- matrix(nrow = numreal, ncol = numsim,
+                 dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+    RC <- matrix(nrow = numreal, ncol = numsim,
+                 dimnames = list(paste("Observacion", 1:numreal), paste("Modelo", 1:numsim)))
+
+    for (i in 1:numsim) {
+        for (j in 1:numreal) {
+            xx <- x[[i]]
+            yy <- y[[j]]
+            n <- length(xx)
+            MSE <- mean((xx - yy)^2, na.rm = TRUE)
+            MC[j, i] <- (mean(xx, na.rm = TRUE) - mean(yy, na.rm = TRUE))^2 / MSE
+            SC[j, i] <- ((n - 1) / n) * (sd(xx, na.rm = TRUE) - sd(yy, na.rm = TRUE))^2 / MSE
+            RC[j, i] <- 2 * (1 - cor(xx, yy, use = "complete.obs")) * (n - 1) / n *
+                sd(xx, na.rm = TRUE) * sd(yy, na.rm = TRUE) / MSE
+        }
+    }
+
+    return(list(MC = MC, SC = SC, RC = RC))
+}
